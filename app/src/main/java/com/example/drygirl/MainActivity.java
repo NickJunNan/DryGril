@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.show_button:
-                if (curPos > 9){
+                if (curPos > 6){
                     curPos = 0;
                 }
                 pictureLoader.load(showImage,urls.get(curPos));
