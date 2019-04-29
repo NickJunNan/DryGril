@@ -15,11 +15,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView showImage;
     private Button showButton;
     private Button refreshButton;
+
     private ArrayList<Girl> data;
     private int curPos = 0;
     private int page = 1;
     private PictureLoader pictureLoader;
     private GirlApi girlApi;
+    private GirlTask girlTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initData() {
         data = new ArrayList<>();
-        new GirlTask(page).execute();
     }
 
     @Override
@@ -56,18 +57,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.refresh_btn:
-                page++;
-                new GirlTask(page).execute();
+                girlTask = new GirlTask();
+                girlTask.execute();
                 curPos = 0;
                 break;
         }
     }
 
     private class GirlTask extends AsyncTask<Void,Void,ArrayList<Girl>>{
-        private int page;
-        public GirlTask(int page) {
-            this.page = page;
-        }
+
+        public GirlTask() { }
 
         @Override
         protected ArrayList<Girl> doInBackground(Void... voids) {
@@ -79,6 +78,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             super.onPostExecute(girls);
             data.clear();
             data.addAll(girls);
+            page++;
         }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            girlTask = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        girlTask.cancel(true);
     }
 }
